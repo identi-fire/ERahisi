@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <div class="theform">
+        <h1>Login</h1>
+        <div class="links">
+            <a href="/personality-test" class="active">Login</a>
+            <!--a href="{{ url_for('register') }}">Register</a-->
+        </div>
+        <form class="forms" action="/personality-test" method="post">
+            <div class="imgcontainer">
+                <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="Avatar" class="avatar">
+            </div>
+            <div class="container"> <!--Please make this log in to dashboard-->
+                <label for="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="uname" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <button type="submit"><a href="" class="dashbutton">Login</a></button>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+
+                <div class="container" style="background-color:#f1f1f1">
+                    <button type="button" class="cancelbtn">Cancel</button>
+                    <span class="psw">Forgot <a href="#">password?</a></span>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
