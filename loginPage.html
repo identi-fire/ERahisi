@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!--link rel="stylesheet" href="styles.css" /-->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <style>
+        /* Add your CSS styling here */
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    <div id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" required><br><br>
+        
+        <button id="login-button">Login</button>
+    </div>
+
+    <div id="response"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginButton = document.getElementById("login-button");
+            const responseDiv = document.getElementById("response");
+
+            loginButton.addEventListener("click", function () {
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+
+                const data = { "username": username, "password": password };
+
+                fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.text())
+                .then(responseText => {
+                    responseDiv.textContent = responseText;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../../Ny_web"
+		},
+		{
+			"path": "../../../Documents/C programs"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Ny_web"
+	}
+}
