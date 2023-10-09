@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/personality.css') }}">
+</head>
+
+<body>
+    <!--h1>User Registration</h1>
+    <form action="/register" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required><br><br>
+        <input type="submit" value="Register">
+    </form-->
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/back2.jpeg') }}");
+            background-position: center;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+    </style>
+
+    <h1>Registration Successful!</h1>
+    <p>Welcome to our platform. You are now registered.</p>
+    <form method="POST">
+        <div class="Successful-Registration">
+            <!--button onclick="window.location.href='/personality-test'">Return to Test</button-->
+        </div>
+        <button onclick="window.location.href='/'" type="button">Sign In</button>
+    </form>
+    </div>
+
+    <!--div class="registration form">
+            <header>Signup</header>
+            <form action="#">
+                <input type="text" placeholder="Enter your email">
+                <input type="password" placeholder="Create a password">
+                <input type="password" placeholder="Confirm your password">
+                <input type="button" class="button" value="Signup">
+            </form>
+            <div class="signup">
+                <span class="signup">Already have an account?
+                    <label for="check">Login</label>
+                </span>
+            </div-->
+    </div>
+    </div>
+</body>
+
+</html>

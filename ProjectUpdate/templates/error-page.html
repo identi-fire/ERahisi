@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!--=== Coding by CodingLab | www.codinglabweb.com === -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="{{ url_for('static', filename='js/personality-test.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pop-up.js') }}"></script>
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/personality.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+    <!--link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"-->
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+    </style>
+
+    <title>Personality Test</title>
+</head>
+
+<body>
+    <nav>
+        <div class="logo-name">
+            <div class="logo-image">
+                <img src="{{ url_for('static', filename='images/newlogo.png') }}" alt="">
+            </div>
+
+            <a href="/" class="logo_name" style="text-decoration: none;">Erahisi</a>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="/dashboard">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">Dashboard</span>
+                    </a></li>
+                <li><a href="/career">
+                        <i class="uil uil-files-landscapes"></i>
+                        <span class="link-name">Career</span>
+                    </a></li>
+                <li><a href="/personality-test">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">Assessment</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-thumbs-up"></i>
+                        <span class="link-name">Like</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-comments"></i>
+                        <span class="link-name">Comment</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-share"></i>
+                        <span class="link-name">Share</span>
+                    </a></li>
+            </ul>
+
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name"> <a href="homepage.html">Logout</a></span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="{{ url_for('static', filename='images/user.png') }}" alt="">
+        </div>
+        <!-- End of sidebar and nav bar -->
+
+        <div>
+            <p style="padding-bottom: 70px;"> </p>
+        </div>
+        <div class="container">
+            <form method="POST" action="/personality-test">
+                <div class="error-message">
+                    <h2>Incomplete Test</h2>
+                    <p>{{ error }}</p>
+                    <!--button onclick="window.location.href='/personality-test'">Return to Test</button-->
+                </div>
+                <button onclick="window.location.href='/personality-test'" type="button">Return to Test</button>
+            </form>
+        </div>
+        <!--script src="script.js"></script-->
+        <!-- Hidden Popup Container -->
+        <div id="popup-container" class="popup-container" style="display: none;">
+            <div class="popup-content">
+                <span id="popup-message"></span>
+                <button id="close-popup">Close</button>
+            </div>
+        </div>
+
+
+</body>
+
+</html>

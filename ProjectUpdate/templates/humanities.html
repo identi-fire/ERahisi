@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results</title>
+    <style>
+        
+        body {
+            
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #FAACA8;
+            background-image: linear-gradient(19deg, #FAACA8 0%, #DDD6F3 100%);
+            max-width: 1800px; 
+            padding: 200px;
+            /* background-color: #63ea5c; */
+            border: 1px solid #fffdfd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px; /* Adjust the width as needed */
+            height: auto;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+
+        body {
+                background-image: url("{{ url_for('static', filename='images/back2.jpeg') }}");
+                background-position: center;
+                background-size: cover;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/humanities.png') }}" alt="Result Image">
+        <h3>You have a strong inclination towards</h3>
+        <div class="result">
+            <p>Humanities</p>
+        </div>
+    </div>
+    <div class="social-sharing">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=YOUR_RESULT_URL" target="_blank">
+            <img src="{{ url_for('static', filename='images/facebook.png') }}" alt="Share on Facebook">
+        </a>
+        <a href="https://twitter.com/intent/tweet?url=YOUR_RESULT_URL&text=I got my personality test result: Humanities!" target="_blank">
+            <img src="{{ url_for('static', filename='images/twitter.png') }}" alt="Share on Twitter">
+        </a>
+        <a href="https://web.whatsapp.com/" target="_blank">
+            <img src="{{ url_for('static', filename='images/whatsapp.png') }}" alt="Share on Whasapp">
+        </a>
+        <!-- Add more social media sharing buttons for other platforms -->
+    </div>
+    <form method="POST" action="/save-to-dashboard">
+        <input type="hidden" name="result" value="{{ result }}">
+        <button type="submit">Save Your Result</button>
+    </form>
+  
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
+
+<body>
+    <!--h1>User Registration</h1>
+    <form action="/register" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required><br><br>
+        <input type="submit" value="Register">
+    </form-->
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/back2.jpeg') }}");
+            background-position: center;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+    </style>
+    <div class="container">
+        <input type="checkbox" id="check">
+        <div class="login form">
+            <header>Sign Up</header>
+            {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <form action="/register" method="POST">
+                <input type="text" placeholder="Enter your Username" name="username">
+                <input type="text" placeholder="Enter your email" name="email">
+                <input type="password" placeholder="Create a password" name="password">
+                <input type="password" placeholder="Confirm your password" name="confirm_password">
+                <!-- Added name attribute here -->
+                <input type="submit" class="button" value="Signup">
+            </form>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="alert">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="signup">
+                <span class="signup">Already have an account?
+                    <a href="/login">Sign in</a>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!--div class="registration form">
+            <header>Signup</header>
+            <form action="#">
+                <input type="text" placeholder="Enter your email">
+                <input type="password" placeholder="Create a password">
+                <input type="password" placeholder="Confirm your password">
+                <input type="button" class="button" value="Signup">
+            </form>
+            <div class="signup">
+                <span class="signup">Already have an account?
+                    <label for="check">Login</label>
+                </span>
+            </div-->
+    </div>
+    </div>
+</body>
+
+</html>

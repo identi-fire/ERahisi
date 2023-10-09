@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results</title>
+    <style>
+        
+        body {
+            
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #0093E9;
+            background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+            max-width: 1800px; 
+            padding: 200px;
+            /* background-color: #63ea5c; */
+            border: 1px solid #fffdfd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px; /* Adjust the width as needed */
+            height: auto;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+
+        body {
+                background-image: url("{{ url_for('static', filename='images/back2.jpeg') }}");
+                background-position: center;
+                background-size: cover;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/science.png') }}" alt="Result Image">
+        <h3>You have a strong inclination towards</h3>
+        <div class="result">
+            <p>Science</p>
+        </div>
+    </div>
+</body>
+</html>
