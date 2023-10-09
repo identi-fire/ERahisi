@@ -5,7 +5,8 @@
 
 .main{
     width: 100%;
-    background-image: url(images/back2.jpg);
+    /*background-image: url(images/back2.jpeg);*/
+    background-image:url_for('static', filename='images/back2.jpeg');
     /* background:  rgb(86, 109, 1); */
     /*background: linear-gradient(to top, rgba(0,0,0,0.5)50%,rgba(0,0,0,0.5)50%), url(1.jpg);*/
     background-position: center;

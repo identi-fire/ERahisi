@@ -79,9 +79,9 @@
             </ul>
 
             <ul class="logout-mode">
-                <li><a href="/logout">
+                <li><a href="#">
                         <i class="uil uil-signout"></i>
-                        <span class="link-name">Logout</a></span>
+                        <span class="link-name"> <a href="homepage.html">Logout</a></span>
                     </a></li>
 
                 <li class="mode">
@@ -115,36 +115,16 @@
         <div>
             <p style="padding-bottom: 70px;"> </p>
         </div>
-
         <div class="container">
-            {% if error %}
-            <div class="error-message">
-                <p>{{ error }}</p>
-
-            </div>
-            {% endif %}
-            <h2>Personality test</h2>
-            <form method="POST">
-
-                {% for i, question in questions %}
-                <label>{{ question }}</label>
-                <div class="question">
-                    <div>
-                        <input type="radio" name="score_{{ i }}" value="1"> Strongly Disagree
-                        <input type="radio" name="score_{{ i }}" value="2"> Disagree
-                        <input type="radio" name="score_{{ i }}" value="3"> Neutral
-                        <input type="radio" name="score_{{ i }}" value="4"> Agree
-                        <input type="radio" name="score_{{ i }}" value="5"> Strongly Agree
-
-                    </div>
+            <form method="POST" action="/personality-test">
+                <div class="error-message">
+                    <h2>Incomplete Test</h2>
+                    <p>{{ error }}</p>
+                    <!--button onclick="window.location.href='/personality-test'">Return to Test</button-->
                 </div>
-                {% endfor %}
-                <!--input type="hidden" name="answered_questions" value="{{ answered_questions }}"-->
-                <input type="submit" value="Submit">
+                <button onclick="window.location.href='/personality-test'" type="button">Return to Test</button>
             </form>
-
         </div>
-
         <!--script src="script.js"></script-->
         <!-- Hidden Popup Container -->
         <div id="popup-container" class="popup-container" style="display: none;">

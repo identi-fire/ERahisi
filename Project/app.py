@@ -3,6 +3,7 @@ import random
 from flask import Flask, request, render_template, g, redirect, jsonify, url_for, flash, session
 from flask_cors import CORS
 import mysql.connector
+from flask_mysql_connector import MySQL
 import logging
 import MySQLdb.cursors, re, hashlib
 import secrets
@@ -10,9 +11,43 @@ import sys
 import requests
 from logger_setup import configure_logger
 from flask_session import Session
+from datetime import datetime, timedelta
+from redis import Redis
+from flask_sqlalchemy import SQLAlchemy
+import re
 
 app = Flask(__name__, static_url_path='/static')
+secret_key = secrets.token_hex(16)
+print("Generated Secret Key:", secret_key)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:g0thb01@localhost/personality_test'  # Update with your database connection details
+db = SQLAlchemy(app)
+
+
+app.secret_key = secret_key
 logger = configure_logger()
+logger.setLevel(logging.DEBUG)  # Set the logging level to DEBUG
+
+#mysql
+app.config['SESSION_SQLALCHEMY'] = MySQL(app)  # Check if the MySQL connection is properly initialized
+
+
+# Configure Flask-Session to use Redis as the session storage
+app.config['SESSION_TYPE'] = 'redis'  # Use Redis session type
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_KEY_PREFIX'] = 'myapp_'
+
+# Configure Redis connection
+app.config['SESSION_REDIS'] = Redis(host='localhost', port=6379, db=0)
+
+#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+Session(app)
+
+app.config['SESSION_TYPE'] = 'sqlalchemy'  # Use SQLAlchemy for session storage
+app.config['SESSION_SQLALCHEMY'] = db  # db is the SQLAlchemy database object
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Set session lifetime to 30 minutes
+
 
 # Connect to the database
 db = mysql.connector.connect(
@@ -41,9 +76,34 @@ db = mysql.connector.connect(
 CORS(app)
 
 #Define the route for the home page:
-@app.route('/')
+
+
+GUEST_USERNAME = "guest"
+GUEST_PASSWORD = "guest"
+
+@app.route('/', methods=["GET", "POST"])
 def homePage():
+    user_id = session.get('guest')
+    if user_id is None:
+        return redirect('/login')  #
+    logger.info('Session Data after login: %s', session)
+    logger.info('Guest user login successful.')
     print("homepage endpoint reached...")
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        if username == GUEST_USERNAME and password == GUEST_PASSWORD:
+            # Guest user login successful, redirect to the personality test page
+            return render_template('personality-test.html')
+    
+        # For registered users, you can add logic to check the database here
+
+        # If username/password is incorrect, render the index.html template with an error message
+        error_message = "Invalid username or password. Please try again."
+        return render_template('index.html', error_message=error_message)
+    
+    # If it's a GET request, just render the index.html template
     return render_template('index.html')
 
 #Define the route for the personality test
@@ -57,6 +117,9 @@ def personality_test():
 #route for aboutUs
 @app.route('/about')
 def about():
+    user_id = session.get('user_id', 'guest')
+    if user_id is None:
+        return redirect('/login')  #
     return render_template('about.html')
 
 #route for contact details
@@ -67,13 +130,23 @@ def contact():
 #route for Team Members
 @app.route('/project')
 def project():
+    user_id = session.get('user_id', 'guest')
+    if user_id is None:
+        return redirect('/login')  #
     return render_template('project.html')
 
+#route for Career
+@app.route('/career')
+def career():
+    user_id = session.get('user_id', 'guest')
+    if user_id is None:
+        return redirect('/login')  #
+    return render_template('career.html')
 # Generate a secure secret key
-secret_key = secrets.token_hex(8)
+#secret_key = secrets.token_hex(16)
 
 # Use the generated secret key in your Flask application
-app.secret_key = secret_key
+#app.secret_key = secret_key
 
 # Create a cursor to execute SQL queries
 cursor = db.cursor()
@@ -93,9 +166,18 @@ create_table_query = """
         `username` varchar(50) NOT NULL,
         `password` varchar(255) NOT NULL,
         `email` varchar(100) NOT NULL,
+        `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 """
+create_table_sessions = """
+CREATE TABLE IF NOT EXISTS `sessions` (
+    session_id CHAR(64) PRIMARY KEY,
+    session_data TEXT,
+    expiry TIMESTAMP
+);
+"""
+cursor.execute(create_table_sessions)
 cursor.execute(create_table_query)
 
 # Commit the changes to the database
@@ -112,65 +194,102 @@ GUEST_PASSWORD = "guest"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
     
-        # Create variables for easy access
+    error = None
+    if request.method == 'POST': 
         username = request.form.get('username', 'guest')
         password = request.form.get('password')
 
+        # Check if it's the guest user
         if username == GUEST_USERNAME and password == GUEST_PASSWORD:
-           # Default user login successful
-           return "Login successful for Guest user!"
-    
+            # Default user login successful, redirect to personality test
+            session['user_id'] = 'guest'
+            logger.info('Session Data after login: %s', session)
+            logger.info('Guest user login successful.')
+            return redirect('/personality-test')
+                   
         # Retrieve the hashed password
-        hash = password + app.secret_key
-        hash = hashlib.sha1(hash.encode())
-        password = hash.hexdigest()
+        hash = hashlib.sha1((password + app.secret_key).encode()).hexdigest()
 
         try:
             cursor = db.cursor()
-            select_query = "SELECT * FROM users WHERE username = %s AND password = %s"
-            values = (username, password)
+            select_query = "SELECT id FROM users WHERE username = %s AND password = %s"
+            values = (username, hash)
             cursor.execute(select_query, values)
             result = cursor.fetchone()
 
             if result:
-                logging.info('Login successful for user: %s', username)
-                return "Login successful!"
-        
+               user_id = result[0]  # Assuming 'id' is the column name for the user's ID in the database
+               session['user_id'] = user_id # Store user ID in the session
+               logger.info('Session Data after login: %s', session)
+               logger.info('Login successful for user: %s', username)
+               return redirect('/personality-test')
             else:
-                logging.warning('Invalid login attempt for user: %s', username)
-                return "Invalid username or password."
-        
+                # Authentication failed, redirect back to the login page with an error message
+                error = 'Invalid username or password'
+                logger.info('Session Data after login: %s', session)
+
         except mysql.connector.Error as err:
             logger.error('Error occurred during login: %s', err)
-            return "Error occurred during login."
-    else: 
-        return render_template("login.html")
+            # Log the specific database error
+            return f"Error occurred during login: {err}"
+
+    # Handle GET request, render the login form
+    
+    return render_template('index.html', error=error)
+
+#logout route
+@app.route("/logout", methods=["GET"])
+def logout():
+    session.pop('user_id', None)  # Clear user session data
+    return redirect('/login')  # Redirect to your home page or login page
+
 
 # User registration route
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    successfulReg = None
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        email = request.form("email")
+        confirm_password = request.form.get("confirm_password")
+        email = request.form.get("email")
 
-         # Retrieve the hashed password
-        hash = password + app.secret_key
-        hash = hashlib.sha1(hash.encode())
-        password = hash.hexdigest()
+        # Validate that both password and email are provided
+        if not (username and password and confirm_password and email):
+            error = "All fields are required."
+            return render_template("register.html", error=error)
 
-         # Insert user account into the database
+        # Validate password confirmation
+        if password != confirm_password:
+            error = "Passwords do not match."
+            return render_template("register.html", error=error)
+        
+        # Validate email format
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            error = "Invalid email address format."
+            return render_template("register.html", error=error)
+
+        # Retrieve the hashed password
+        hash = hashlib.sha1((password + app.secret_key).encode()).hexdigest()
+
+        # Get current timestamp
+        timestamp = datetime.now()
+
+        # Insert user account into the database
         try:
             cursor = db.cursor()
-            insert_query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s)"
-            values = (username, password, email)
+            insert_query = "INSERT INTO users (username, password, email, date_created) VALUES (%s, %s, %s, %s)"
+            values = (username, hash, email, timestamp)  # Use hashed password here
             cursor.execute(insert_query, values)
             db.commit()
 
             logging.info('Registration successful for user: %s', username)
-            return "Registration successful!"
+            # Redirect to the successful registration page after successful registration
+            session['user_id'] = cursor.lastrowid  # Assuming lastrowid is the ID of the newly inserted user
+            logging.info('Registration successful for user: %s', username)
+            successfulReg ="Registration Successful!"
+            return render_template('successful-reg.html', successfulReg=successfulReg)
         
         except mysql.connector.Error as err:
             logger.error('Error occurred during registration: %s', err)
@@ -178,9 +297,12 @@ def register():
 
     else:
         return render_template("register.html")
+
     
 @app.route('/personality-test', methods=['GET', 'POST'])
 def run_personality_test():
+    user_id = session.get('user_id', 'guest')
+       
     questions = [
 
         "Was science your favorite area?",
@@ -262,6 +384,7 @@ def run_personality_test():
     print("If your answer is 'no', the score for that question will be 0.")
     #total_score = 0
 
+    error = None  # Initialize error variable to None initially
     if request.method == 'POST':
         total_score = 0
         answered_questions = 0  # Track the number of questions with answers
@@ -287,9 +410,8 @@ def run_personality_test():
         #    return "Please answer at least 5 questions to complete the test."
         
         if answered_questions < 5:
-            error_message = "Please answer at least 5 questions to complete the test."
-            return jsonify(error=error_message), 400
-
+            error = "Please answer at least 5 questions to complete the test."
+            return render_template('error-page.html', selected_questions=selected_questions, error=error)
 
 
         if total_score < 18:  # Adjust the threshold based on the new range
@@ -329,6 +451,9 @@ def run_personality_test():
 
 @app.route('/dashboard')
 def dashboard():
+    user_id = session.get('user_id', 'guest')
+    if user_id is None:
+        return redirect('/login')  #
     # Render dashboard page
     return render_template('dashboard.html')        
 
